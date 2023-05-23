@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mapper.BaseBrandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.atguigu.entity.BaseBrand">
+        <id column="id" property="id" />
+        <result column="brand_name" property="brandName" />
+        <result column="brand_logo_url" property="brandLogoUrl" />
+    </resultMap>
+
+    <select id="getCategoryByCategoryId" resultMap="BaseResultMap">
+        SELECT
+            *
+        from
+            base_brand a
+        WHERE
+            ( a.category_id = #{category1Id} AND a.category_level = 1 )
+           OR ( a.category_id = #{category2Id}  AND a.category_level = 2 )
+           OR ( a.category_id = #{category3Id} AND a.category_level = 3 )
+    </select>
+</mapper>
