@@ -29,9 +29,9 @@ public interface BaseBrandService extends IService<BaseBrand> {
      */
     void setNum();
 
-//    /**
-//     * 添加品牌
-//     * @param baseBrand
-//     */
+    /**
+     * 添加品牌
+     * @param baseBrand
+     */
 //    void saveBrand(BaseBrand baseBrand);
 }

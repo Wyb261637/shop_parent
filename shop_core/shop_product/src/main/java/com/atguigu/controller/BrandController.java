@@ -29,7 +29,7 @@ public class BrandController {
     private MinioUploader minioUploader;
 
     /**
-     * 1.分页查询品牌列表 <a href="http://192.168.15.218/product/brand/queryBrandByPage/1/10">...</a>
+     * 1.分页查询品牌列表 <a href="http://192.168.2.129/product/brand/queryBrandByPage/1/10">...</a>
      *
      * @param currentPageNum
      * @param pageSize
@@ -44,7 +44,7 @@ public class BrandController {
 
 
     /**
-     * 2.添加品牌 <a href="http://192.168.15.218/product/brand">...</a>
+     * 2.添加品牌 <a href="http://192.168.2.129/product/brand">...</a>
      *
      * @param baseBrand
      * @return
@@ -56,7 +56,7 @@ public class BrandController {
     }
 
     /**
-     * 3.根据id查询品牌信息 <a href="http://192.168.15.218/product/brand/4">...</a>
+     * 3.根据id查询品牌信息 <a href="http://192.168.2.129/product/brand/4">...</a>
      *
      * @param brandId
      * @return

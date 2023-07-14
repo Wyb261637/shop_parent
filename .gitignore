@@ -1,0 +1,10 @@
+# 项目排除路径
+/shop_core/shop_product/target/
+/shop_feign_client/target/
+/shop_gateway/target/
+/shop_mbg/target/
+/shop_model/target/
+/shop_utils/shop_common_utils/target/
+/shop_utils/shop_core_utils/target/
+/shop_utils/shop_web_utils/target/
+/shop_web/target/

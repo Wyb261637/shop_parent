@@ -2,6 +2,9 @@ package com.atguigu.utils;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+/**
+ * @author wangy
+ */
 @Data
 @ConfigurationProperties(prefix = "minio")
 public class MinioProperties {

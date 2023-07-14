@@ -1,5 +1,8 @@
 package com.atguigu.exception;
 
+/**
+ * @author wangy
+ */
 public class SleepUtils {
     public static void second(int second) {
         try {

@@ -5,6 +5,9 @@ import com.atguigu.exception.SleepUtils;
 import com.atguigu.mapper.BaseBrandMapper;
 import com.atguigu.service.BaseBrandService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     /**
      * 根据分类id查询品牌列表
@@ -232,7 +238,7 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
      */
     public Map<Thread, Boolean> threadMap = new HashMap<>();
 
-//    @Override
+    //    @Override
     public synchronized void setNum8() {
         //还有很多操作要执行 去查缓存 去判断 去过滤等操作 200行代码要执行
         Boolean flag = threadMap.get(Thread.currentThread());
@@ -262,7 +268,7 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
                 boolean reTryAcquireLock = Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent("lock", token, 30, TimeUnit.MINUTES));
                 if (reTryAcquireLock) {
                     //拿到锁以后就不要去自旋了
-                    threadMap.put(Thread.currentThread(),true);
+                    threadMap.put(Thread.currentThread(), true);
                     break;
                 }
             }
@@ -273,17 +279,17 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
     /**
      * 方案三：存在内存泄露问题
      * 解决方案：a.通过线上日志以及抓取当前应用的内存模型
-     *         b.jvisualvm连上应用程序进行观测 发现有个map在不断地进行上涨
+     * b.jvisualvm连上应用程序进行观测 发现有个map在不断地进行上涨
      */
     public Map<Thread, String> threadMap1 = new HashMap<>();
 
-//    @Override
+    //    @Override
     public synchronized void setNum9() {
         //还有很多操作要执行 去查缓存 去判断 去过滤等操作 200行代码要执行
         String token = threadMap1.get(Thread.currentThread());
         boolean acquireLock = false;
         //代表第一次来
-        if (token == null ) {
+        if (token == null) {
             token = UUID.randomUUID().toString();
             acquireLock = Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent("lock", token, 30, TimeUnit.MINUTES));
 
@@ -308,7 +314,7 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
                 boolean reTryAcquireLock = Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent("lock", token, 30, TimeUnit.MINUTES));
                 if (reTryAcquireLock) {
                     //拿到锁以后就不要去自旋了
-                    threadMap1.put(Thread.currentThread(),token);
+                    threadMap1.put(Thread.currentThread(), token);
                     break;
                 }
             }
@@ -319,15 +325,15 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
     /**
      * 用线程安全类 ThreadLocal来替代map 其实ThreadLocal的底层用的就是map
      */
-    public ThreadLocal< String> threadLocal = new ThreadLocal<>();
+    public ThreadLocal<String> threadLocal = new ThreadLocal<>();
 
-    @Override
-    public synchronized void setNum() {
+    //    @Override
+    public synchronized void setNum10() {
         //还有很多操作要执行 去查缓存 去判断 去过滤等操作 200行代码要执行
         String token = threadLocal.get();
         boolean acquireLock = false;
         //代表第一次来
-        if (token == null ) {
+        if (token == null) {
             token = UUID.randomUUID().toString();
             acquireLock = Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent("lock", token, 30, TimeUnit.MINUTES));
 
@@ -357,6 +363,17 @@ public class BaseBrandServiceImpl extends ServiceImpl<BaseBrandMapper, BaseBrand
                 }
             }
             setNum();
+        }
+    }
+
+    @Override
+    public synchronized void setNum() {
+        RLock lock = redissonClient.getLock("lock");
+        lock.lock();
+        try {
+            doBusiness();
+        } finally {
+            lock.unlock();
         }
     }
 }

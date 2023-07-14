@@ -49,11 +49,10 @@ public class MinioUploader {
     public String uploadFile(MultipartFile file) throws Exception {
         String fileName = UUID.randomUUID() + file.getOriginalFilename();
         InputStream inputStream = file.getInputStream();
-        ;
         PutObjectOptions putObjectOptions = new PutObjectOptions(inputStream.available(), -1);
         putObjectOptions.setContentType(file.getContentType());
         minioClient.putObject(minioProperties.getBucketName(), fileName, inputStream, putObjectOptions);
-        //返回文件上传成功之后的地址 http://10.211.55.6:9000/java0212/new.jpg
+        //返回文件上传成功之后的地址 http://192.168.2.129:9000/java0212/new.jpg
         String retUrl = minioProperties.getEndpoint() + "/" + minioProperties.getBucketName() + "/" + fileName;
         System.out.println("上传成功" + retUrl);
         return retUrl;

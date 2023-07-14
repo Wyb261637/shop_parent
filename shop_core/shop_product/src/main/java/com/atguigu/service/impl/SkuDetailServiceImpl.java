@@ -11,6 +11,8 @@ import com.atguigu.service.SkuImageService;
 import com.atguigu.service.SkuInfoService;
 import com.atguigu.service.SkuSalePropertyValueService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -35,6 +37,8 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
     private SkuImageService skuImageService;
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Autowired
     private SkuSalePropertyValueService skuSalePropertyValueService;
@@ -50,6 +54,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
      * 1.查询商品基本信息
      * 2.查询商品图片信息
      * 3.详情页面访问量过大，需要添加到redis中
+     *
      * @param skuId
      * @return
      */
@@ -57,25 +62,53 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     public SkuInfo getSkuInfo(Long skuId) {
 //        SkuInfo skuInfo = getSkuInfoFromDb(skuId);
 //        SkuInfo skuInfo = getSkuInfoFromRedis(skuId);
-        SkuInfo skuInfo = getSkuInfoFromRedisWithThreadLocal(skuId);
+//        SkuInfo skuInfo = getSkuInfoFromRedisWithThreadLocal(skuId);
+        SkuInfo skuInfo = getSkuInfoFromRedisson(skuId);
 
         return skuInfo;
+    }
+
+    /**
+     * 利用redisson实现分布式锁
+     *
+     * @param skuId
+     * @return
+     */
+    private SkuInfo getSkuInfoFromRedisson(Long skuId) {
+        //需要先查询redis是否有数据，没有的话再查询数据库，然后把数据添加到redis中去
+        //创建缓存名 sku:24:info
+        String cacheKey = RedisConst.SKUKEY_PREFIX + skuId + RedisConst.SKUKEY_SUFFIX;
+        //1.从缓存中查询数据
+        SkuInfo skuInfoRedis = (SkuInfo) redisTemplate.opsForValue().get(cacheKey);
+        //判断是否为空
+        if (skuInfoRedis == null) {
+            //加入分布式锁
+            RLock lock = redissonClient.getLock("lock-" + skuId);
+            lock.lock();
+            try {
+                return doBusiness(skuId, cacheKey);
+            } finally {
+                lock.unlock();
+            }
+        }
+        return skuInfoRedis;
     }
 
     /**
      * 利用redis+lua+threadLocal查询商品基本信息
      */
     public ThreadLocal<String> threadLocal = new ThreadLocal<>();
+
     private SkuInfo getSkuInfoFromRedisWithThreadLocal(Long skuId) {
-        String cacheKey= RedisConst.SKUKEY_PREFIX+skuId+RedisConst.SKUKEY_SUFFIX;
+        String cacheKey = RedisConst.SKUKEY_PREFIX + skuId + RedisConst.SKUKEY_SUFFIX;
         //a.从缓存中查询数据
         SkuInfo skuInfoRedis = (SkuInfo) redisTemplate.opsForValue().get(cacheKey);
-        if(skuInfoRedis==null){
+        if (skuInfoRedis == null) {
             //还有很多操作要执行 去查缓存 去判断 去过滤等操作 200行代码要执行
             String token = threadLocal.get();
             boolean accquireLock = false;
             //定义一个锁的名称 减小锁的粒度 让每一次访问都拿自己的锁
-            String lockKey="lock-"+skuId;
+            String lockKey = "lock-" + skuId;
             //代表第一次来 不参与自旋
             if (token == null) {
                 token = UUID.randomUUID().toString();
@@ -108,10 +141,11 @@ public class SkuDetailServiceImpl implements SkuDetailService {
                 }
                 return getSkuInfoFromRedisWithThreadLocal(skuId);
             }
-        }else{
+        } else {
             return skuInfoRedis;
         }
     }
+
     private SkuInfo doBusiness(Long skuId, String cacheKey) {
         //b.如果缓存里面没有数据 从数据库中查
         SkuInfo skuInfoDb = getSkuInfoFromDb(skuId);
@@ -119,8 +153,10 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         redisTemplate.opsForValue().set(cacheKey, skuInfoDb, RedisConst.SKUKEY_TIMEOUT, TimeUnit.SECONDS);
         return skuInfoDb;
     }
+
     /**
      * 从redis中查询数据
+     *
      * @param skuId
      * @return
      */
@@ -132,17 +168,14 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         SkuInfo skuInfoRedis = (SkuInfo) redisTemplate.opsForValue().get(cacheKey);
         //判断是否为空
         if (skuInfoRedis == null) {
-            //2.查询完数据库后把数据放到redis
-            SkuInfo skuInfoDb = getSkuInfoFromDb(skuId);
-            redisTemplate.opsForValue().set(cacheKey, skuInfoDb,RedisConst.SKUKEY_TIMEOUT, TimeUnit.SECONDS);
-            //缓存数据为空就返回数据库查询的数据
-            return skuInfoDb;
+            return doBusiness(skuId, cacheKey);
         }
         return skuInfoRedis;
     }
 
     /**
      * 从数据库中查询数据
+     *
      * @param skuId
      * @return
      */
