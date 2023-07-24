@@ -11,6 +11,7 @@ import com.atguigu.service.SkuImageService;
 import com.atguigu.service.SkuInfoService;
 import com.atguigu.service.SkuSalePropertyValueService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +38,21 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
     @Autowired
     private SkuImageService skuImageService;
-    @Autowired
-    private RedissonClient redissonClient;
 
     @Autowired
     private SkuSalePropertyValueService skuSalePropertyValueService;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private RBloomFilter<Long> skuBloomFilter;
+    @Resource
+    private RedisTemplate redisTemplate;
     @Resource
     private ProductSalePropertyKeyMapper salePropertyKeyMapper;
 
-    @Resource
-    private RedisTemplate redisTemplate;
+
 
     /**
      * 根据skuId查询商品的基本信息
@@ -60,11 +65,10 @@ public class SkuDetailServiceImpl implements SkuDetailService {
      */
     @Override
     public SkuInfo getSkuInfo(Long skuId) {
-//        SkuInfo skuInfo = getSkuInfoFromDb(skuId);
+        SkuInfo skuInfo = getSkuInfoFromDb(skuId);
 //        SkuInfo skuInfo = getSkuInfoFromRedis(skuId);
 //        SkuInfo skuInfo = getSkuInfoFromRedisWithThreadLocal(skuId);
-        SkuInfo skuInfo = getSkuInfoFromRedisson(skuId);
-
+//        SkuInfo skuInfo = getSkuInfoFromRedisson(skuId);
         return skuInfo;
     }
 
@@ -86,7 +90,17 @@ public class SkuDetailServiceImpl implements SkuDetailService {
             RLock lock = redissonClient.getLock("lock-" + skuId);
             lock.lock();
             try {
-                return doBusiness(skuId, cacheKey);
+                //先去查询布隆过滤器是否有该数据
+                boolean flag = skuBloomFilter.contains(skuId);
+                //赋值一个空值对象
+                SkuInfo skuInfoDb = new SkuInfo();
+                if (flag) {
+                    //b.如果缓存里面没有数据 从数据库中查
+                    skuInfoDb = getSkuInfoFromDb(skuId);
+                }
+                //c.放入数据到缓存
+                redisTemplate.opsForValue().set(cacheKey, skuInfoDb, RedisConst.SKUKEY_TIMEOUT, TimeUnit.SECONDS);
+                return skuInfoDb;
             } finally {
                 lock.unlock();
             }

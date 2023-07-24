@@ -1,5 +1,6 @@
 package com.atguigu.controller;
 
+import com.atguigu.cache.ShopCache;
 import com.atguigu.entity.BaseCategoryView;
 import com.atguigu.entity.ProductSalePropertyKey;
 import com.atguigu.entity.SkuInfo;
@@ -45,6 +46,7 @@ public class SkuDetailController {
      * @param skuId
      * @return
      */
+    @ShopCache(prefix = "skuInfo")
     @GetMapping("getSkuInfo/{skuId}")
     @ApiOperation(value = "根据skuId查询商品的基本信息")
     public SkuInfo getSkuInfo(@PathVariable Long skuId) {
@@ -70,6 +72,7 @@ public class SkuDetailController {
      * @param skuId
      * @return
      */
+    @ShopCache(prefix = "price",enableBloom = true)
     @GetMapping("getSkuPrice/{skuId}")
     public BigDecimal getSkuPrice(@PathVariable Long skuId) {
         SkuInfo skuInfo = skuInfoService.getById(skuId);

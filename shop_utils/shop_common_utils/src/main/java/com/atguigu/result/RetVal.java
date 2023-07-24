@@ -1,5 +1,6 @@
 package com.atguigu.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "全局统一返回结果")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RetVal<T> {
 
     // 200 , 成功!
