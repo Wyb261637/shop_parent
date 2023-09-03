@@ -32,3 +32,10 @@ feign:
 #logging:
 #  level:
 #    com.atguigu.client: DEBUG
+# 配置线程池
+thread:
+  pool:
+    core-pool-size: 16
+    maximum-pool-size: 32
+    keep-alive-time: 50
+    queue-length: 100

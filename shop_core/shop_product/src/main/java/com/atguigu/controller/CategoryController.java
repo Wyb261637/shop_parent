@@ -1,6 +1,7 @@
 package com.atguigu.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.atguigu.entity.BaseCategory1;
 import com.atguigu.entity.BaseCategory2;
 import com.atguigu.entity.BaseCategory3;
@@ -8,9 +9,13 @@ import com.atguigu.result.RetVal;
 import com.atguigu.service.BaseCategory1Service;
 import com.atguigu.service.BaseCategory2Service;
 import com.atguigu.service.BaseCategory3Service;
+import com.atguigu.service.BaseCategoryViewService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -34,6 +39,8 @@ public class CategoryController {
     @Autowired
     private BaseCategory3Service category3Service;
 
+    @Autowired
+    private BaseCategoryViewService baseCategoryViewService;
     /**
      * 1.查询一级分类 <a href="http://192.168.2.129/product/getCategory1">...</a>
      * @return Raw use of parameterized class 'RetVal'
@@ -69,6 +76,16 @@ public class CategoryController {
         wrapper.eq("category2_id",category2Id);
         List<BaseCategory3> category3List = category3Service.list(wrapper);
         return RetVal.ok(category3List);
+    }
+    /**
+     * 4.首页商品分类数据信息显示
+     * @param
+     * @return
+     */
+    @GetMapping("getIndexCategory")
+    public RetVal getIndexCategory(){
+        List<JSONObject> categoryViewList = baseCategoryViewService.getIndexCategory();
+        return RetVal.ok(categoryViewList);
     }
 }
 

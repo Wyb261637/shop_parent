@@ -3,6 +3,7 @@ package com.atguigu.client;
 import com.atguigu.entity.BaseCategoryView;
 import com.atguigu.entity.ProductSalePropertyKey;
 import com.atguigu.entity.SkuInfo;
+import com.atguigu.result.RetVal;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,4 +69,11 @@ public interface ProductFeignClient {
     @GetMapping("/sku/getSpuSalePropertyAndSelected/{productId}/{skuId}")
     List<ProductSalePropertyKey> getSpuSalePropertyAndSelected(@PathVariable Long productId, @PathVariable Long skuId);
 
+    /**
+     * 6.首页商品分类数据信息显示
+     * @param
+     * @return
+     */
+    @GetMapping("/product/getIndexCategory")
+     RetVal getIndexCategory();
 }

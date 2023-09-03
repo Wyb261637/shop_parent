@@ -46,7 +46,7 @@ public class SkuDetailController {
      * @param skuId
      * @return
      */
-    @ShopCache(prefix = "skuInfo")
+//    @ShopCache(prefix = "skuInfo")
     @GetMapping("getSkuInfo/{skuId}")
     @ApiOperation(value = "根据skuId查询商品的基本信息")
     public SkuInfo getSkuInfo(@PathVariable Long skuId) {
