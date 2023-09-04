@@ -1,0 +1,32 @@
+server:
+  port: 8001
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  elasticsearch:
+    rest:
+      uris: http://192.168.2.129:9200
+  application:
+    name: shop-search
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.2.129:8848
+  rabbitmq:
+    host: 192.168.2.129
+    port: 5672
+    username: root
+    password: 123456
+  redis:
+    host: 192.168.2.129
+    port: 6389
+    database: 0
+    timeout: 1800000
+feign:
+  sentinel:
+    enabled: true
+  client:
+    config:
+      default:
+        readTimeout: 3000
+        connectTimeout: 1000
