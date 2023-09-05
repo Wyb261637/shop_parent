@@ -75,5 +75,15 @@ public class PlatformPropertyController {
             return RetVal.fail();
         }
     }
+    /**
+     * 4.根据skuId查询商品的平台属性
+     * @param skuId
+     * @return
+     */
+    @GetMapping("getPlatformPropertyBySkuId/{skuId}")
+    public List<PlatformPropertyKey> getPlatformPropertyBySkuId(@PathVariable Long skuId) {
+        return platformPropertyKeyService.getPlatformPropertyBySkuId(skuId);
+
+    }
 }
 

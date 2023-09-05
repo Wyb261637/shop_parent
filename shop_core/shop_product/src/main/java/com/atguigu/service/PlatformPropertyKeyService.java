@@ -30,4 +30,10 @@ public interface PlatformPropertyKeyService extends IService<PlatformPropertyKey
      * @return
      */
     boolean savePlatformProperty(PlatformPropertyKey platformPropertyKey);
+    /**
+     * 根据skuId查询商品的平台属性
+     * @param skuId
+     * @return
+     */
+    List<PlatformPropertyKey> getPlatformPropertyBySkuId(Long skuId);
 }

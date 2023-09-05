@@ -10,4 +10,5 @@ package com.atguigu.service;
 public interface SearchService {
     void onSale(Long skuId);
 
+    void offSale(Long skuId);
 }

@@ -24,5 +24,10 @@ public interface PlatformPropertyKeyMapper extends BaseMapper<PlatformPropertyKe
      * @return
      */
     List<PlatformPropertyKey> getPlatformPropertyByCategoryId(@Param("category1Id") Long category1Id,@Param("category2Id")  Long category2Id,@Param("category3Id")  Long category3Id);
-
+    /**
+     * 根据skuId查询商品的平台属性
+     * @param skuId
+     * @return
+     */
+    List<PlatformPropertyKey> getPlatformPropertyBySkuId(Long skuId);
 }

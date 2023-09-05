@@ -45,4 +45,20 @@
             OR ( a.category_id = #{category2Id} AND a.category_level = 2 )
             OR ( a.category_id = #{category3Id} AND a.category_level = 3 )
     </select>
+    <select id="getPlatformPropertyBySkuId" resultMap="platformPropertyMap">
+        SELECT
+            a.id,
+            a.property_key,
+            a.category_id,
+            a.category_level,
+            b.id property_value_id,
+            b.property_value,
+            b.property_key_id
+        FROM
+            platform_property_key a
+                INNER JOIN platform_property_value b ON a.id = b.property_key_id
+                INNER JOIN sku_platform_property_value c ON b.id = c.property_value_id
+        WHERE
+            c.sku_id = #{skuId}
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.atguigu.controller;
 
 
+import com.atguigu.client.SearchFeignClient;
 import com.atguigu.entity.ProductImage;
 import com.atguigu.entity.ProductSalePropertyKey;
 import com.atguigu.entity.SkuInfo;
@@ -33,6 +34,9 @@ public class SkuController {
 
     @Autowired
     private SkuInfoService skuInfoService;
+
+    @Autowired
+    private SearchFeignClient searchFeignClient;
 
     @Autowired
     private ProductSalePropertyKeyService salePropertyKeyService;
@@ -102,6 +106,7 @@ public class SkuController {
         //0代表商品下架
         skuInfo.setIsSale(0);
         skuInfoService.updateById(skuInfo);
+        searchFeignClient.offSale(skuId);
         return RetVal.ok();
     }
 
@@ -118,6 +123,7 @@ public class SkuController {
         //1代表商品上架
         skuInfo.setIsSale(1);
         skuInfoService.updateById(skuInfo);
+        searchFeignClient.onSale(skuId);
         return RetVal.ok();
     }
 }

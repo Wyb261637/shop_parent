@@ -63,7 +63,7 @@ public class BrandController {
      * @return
      */
     @GetMapping("{brandId}")
-    public RetVal getBrandById(@PathVariable Long brandId) {
+    public RetVal saveBrand(@PathVariable Long brandId) {
         return RetVal.ok(baseBrandService.getById(brandId));
     }
 
@@ -126,5 +126,16 @@ public class BrandController {
                                                   @PathVariable Long category3Id){
         List<BaseBrand> baseBrandList=baseBrandService.getCategoryByCategoryId(category1Id,category2Id,category3Id);
         return RetVal.ok(baseBrandList);
+    }
+    /**
+     * 9.根据id查询品牌信息
+     *
+     * @param brandId
+     * @return
+     */
+    @GetMapping("getBrandById/{brandId}")
+    public BaseBrand getBrandById(@PathVariable Long brandId) {
+
+        return  baseBrandService.getById(brandId);
     }
 }

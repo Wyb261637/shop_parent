@@ -1,8 +1,6 @@
 package com.atguigu.client;
 
-import com.atguigu.entity.BaseCategoryView;
-import com.atguigu.entity.ProductSalePropertyKey;
-import com.atguigu.entity.SkuInfo;
+import com.atguigu.entity.*;
 import com.atguigu.result.RetVal;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,4 +74,19 @@ public interface ProductFeignClient {
      */
     @GetMapping("/product/getIndexCategory")
      RetVal getIndexCategory();
+    /**
+     * 7.根据id查询品牌信息
+     *
+     * @param brandId
+     * @return
+     */
+    @GetMapping("/product/brand/getBrandById/{brandId}")
+     BaseBrand getBrandById(@PathVariable Long brandId);
+    /**
+     * 8.根据skuId查询商品的平台属性
+     * @param skuId
+     * @return
+     */
+    @GetMapping("/product/getPlatformPropertyBySkuId/{skuId}")
+     List<PlatformPropertyKey> getPlatformPropertyBySkuId(@PathVariable Long skuId);
 }

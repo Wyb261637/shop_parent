@@ -36,10 +36,25 @@ public class SearchController {
         esRestTemplate.putMapping(Product.class);
         return RetVal.ok();
     }
-    //2.商品的上架
+
+    /**
+     * 2.商品的上架
+     * @param skuId
+     * @return
+     */
     @GetMapping("onSale/{skuId}")
     public RetVal onSale(@PathVariable Long skuId){
         searchService.onSale(skuId);
+        return RetVal.ok();
+    }
+    /**
+     * 3.商品的下架
+     * @param skuId
+     * @return
+     */
+    @GetMapping("offSale/{skuId}")
+    public RetVal offSale(@PathVariable Long skuId){
+        searchService.offSale(skuId);
         return RetVal.ok();
     }
 }
