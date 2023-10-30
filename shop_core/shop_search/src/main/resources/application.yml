@@ -19,7 +19,7 @@ spring:
     password: 123456
   redis:
     host: 192.168.2.129
-    port: 6389
+    port: 6379
     database: 0
     timeout: 1800000
 feign:

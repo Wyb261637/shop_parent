@@ -2,13 +2,12 @@ package com.atguigu.controller;
 
 import com.atguigu.result.RetVal;
 import com.atguigu.search.Product;
+import com.atguigu.search.SearchParam;
+import com.atguigu.search.SearchResponseVo;
 import com.atguigu.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -26,8 +25,10 @@ public class SearchController {
     private ElasticsearchRestTemplate esRestTemplate;
     @Resource
     private SearchService searchService;
+
     /**
      * 1.创建索引与映射
+     *
      * @return
      */
     @GetMapping("createIndex")
@@ -39,22 +40,37 @@ public class SearchController {
 
     /**
      * 2.商品的上架
+     *
      * @param skuId
      * @return
      */
     @GetMapping("onSale/{skuId}")
-    public RetVal onSale(@PathVariable Long skuId){
+    public RetVal onSale(@PathVariable Long skuId) {
         searchService.onSale(skuId);
         return RetVal.ok();
     }
+
     /**
      * 3.商品的下架
+     *
      * @param skuId
      * @return
      */
     @GetMapping("offSale/{skuId}")
-    public RetVal offSale(@PathVariable Long skuId){
+    public RetVal offSale(@PathVariable Long skuId) {
         searchService.offSale(skuId);
         return RetVal.ok();
+    }
+
+    /**
+     * 4.商品的搜索
+     *
+     * @param searchParam
+     * @return
+     */
+    @PostMapping("searchProduct")
+    public RetVal searchProduct(SearchParam searchParam) {
+        SearchResponseVo searchResponseVo = searchService.searchProduct(searchParam);
+        return RetVal.ok(searchResponseVo);
     }
 }

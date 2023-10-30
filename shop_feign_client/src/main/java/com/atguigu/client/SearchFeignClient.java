@@ -1,9 +1,11 @@
 package com.atguigu.client;
 
 import com.atguigu.result.RetVal;
+import com.atguigu.search.SearchParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * projectName: shop_parent
@@ -28,4 +30,12 @@ public interface SearchFeignClient {
      */
     @GetMapping("/search/offSale/{skuId}")
      RetVal offSale(@PathVariable Long skuId);
+    /**
+     * 3.商品的搜索
+     *
+     * @param searchParam
+     * @return
+     */
+    @PostMapping("/search/searchProduct")
+     RetVal searchProduct(SearchParam searchParam);
 }

@@ -11,4 +11,5 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * description:
  */
 public interface ProductMapper extends ElasticsearchRepository<Product,Long> {
+
 }
