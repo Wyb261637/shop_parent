@@ -1,8 +1,10 @@
 package com.atguigu.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import springfox.documentation.schema.Model;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * projectName: shop_parent
@@ -15,7 +17,9 @@ import springfox.documentation.schema.Model;
 public class WebLoginController {
 
     @RequestMapping("login.html")
-    public String login(Model model) {
+    public String login(Model model, HttpServletRequest request) {
+        String originalUrl = request.getParameter("originalUrl");
+        model.addAttribute("originalUrl",originalUrl);
         return "login";
     }
 }
