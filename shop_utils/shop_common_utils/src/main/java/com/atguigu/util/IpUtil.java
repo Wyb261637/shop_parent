@@ -52,7 +52,7 @@ public class IpUtil {
         return ipAddress;
     }
     // 网关中获取Ip地址
-    public static String getGatwayIpAddress(ServerHttpRequest request) {
+    public static String getGatewayIpAddress(ServerHttpRequest request) {
         HttpHeaders headers = request.getHeaders();
         String ip = headers.getFirst("x-forwarded-for");
         if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
