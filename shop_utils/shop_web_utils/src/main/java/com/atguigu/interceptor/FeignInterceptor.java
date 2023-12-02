@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 用来对发起feign请求的拦截器
  * 在这里我们用它来把一个微服务的(用户id信息)传给另一个微服务
+ * @author wangy
  */
 @Component
 public class FeignInterceptor implements RequestInterceptor {

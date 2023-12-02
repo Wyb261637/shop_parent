@@ -1,13 +1,13 @@
 package com.atguigu.controller;
 
 import com.atguigu.client.CartFeignClient;
-import com.atguigu.util.AuthContextHolder;
+import com.atguigu.client.ProductFeignClient;
+import com.atguigu.entity.SkuInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -22,6 +22,8 @@ public class WebCartController {
 
     @Autowired
     private CartFeignClient cartFeignClient;
+    @Autowired
+    private ProductFeignClient productFeignClient;
 
     /**
      * 1.加入购物车的接口 ?skuId&skuNum=2
@@ -29,9 +31,21 @@ public class WebCartController {
      * @return
      */
     @RequestMapping("addCart.html")
-    public String addCart(@RequestParam Long skuId, @RequestParam Long skuNum, HttpServletRequest request){
-        String userId = AuthContextHolder.getUserId(request);
-        cartFeignClient.addCart(skuId,skuNum);
+    public String addCart(@RequestParam Long skuId, @RequestParam Long skuNum, Model model) {
+
+        cartFeignClient.addCart(skuId, skuNum);
+        SkuInfo skuInfo = productFeignClient.getSkuInfo(skuId);
+        model.addAttribute("skuInfo",skuInfo);
+        model.addAttribute("skuNum",skuNum);
         return "cart/addCart";
+    }
+
+    /**
+     * 2.购物车列表
+     */
+    @RequestMapping("cart.html")
+    public String cart() {
+
+        return "cart/index";
     }
 }

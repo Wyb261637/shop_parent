@@ -60,4 +60,4 @@ spring:
             allowCredentials: true
 
 filter:
-  whiteList: addCart.html,myOrder.html
+  whiteList: myOrder.html,XXX

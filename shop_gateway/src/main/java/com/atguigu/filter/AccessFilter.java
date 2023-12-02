@@ -53,6 +53,8 @@ public class AccessFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
+        //5.拿到用户的临时id
+        String userTempId = getUserTempId(request);
         //3.请求白名单之前还需查看用户是否已经登录
         String userId = getUserId(request);
         //1.内部接口不允许直接访问
@@ -72,13 +74,32 @@ public class AccessFilter implements GlobalFilter {
             }
         }
         //4.把用户信息保存到header中传给shop-web
-        if (!StringUtils.isEmpty(userId)){
-            request.mutate().header("userId",userId).build();
+        if (!StringUtils.isEmpty(userId) || !StringUtils.isEmpty(userTempId)) {
+            if (!StringUtils.isEmpty(userId)) {
+                request.mutate().header("userId", userId).build();
+            }
+            if (!StringUtils.isEmpty(userTempId)) {
+                request.mutate().header("userTempId", userTempId).build();
+            }
             //放开拦截器 让下游继续执行（传递了参数）
             return chain.filter(exchange.mutate().request(request).build());
         }
         //如果不想拦截，放开
         return chain.filter(exchange);
+    }
+
+    private String getUserTempId(ServerHttpRequest request) {
+        String userTempId = "";
+        List<String> headerValueList = request.getHeaders().get("userTempId");
+        if (!CollectionUtils.isEmpty(headerValueList)) {
+            userTempId = headerValueList.get(0);
+        } else {
+            HttpCookie cookie = request.getCookies().getFirst("userTempId");
+            if (cookie != null) {
+                userTempId = cookie.getValue();
+            }
+        }
+        return userTempId;
     }
 
     private String getUserId(ServerHttpRequest request) {
