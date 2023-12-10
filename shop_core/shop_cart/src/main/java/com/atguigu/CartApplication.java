@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * projectName: shop_parent
@@ -12,6 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * time: 2023/11/21 22:47 周二
  * description:
  */
+@EnableAsync
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableFeignClients
