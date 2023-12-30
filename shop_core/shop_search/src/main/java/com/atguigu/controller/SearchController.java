@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 /**
  * projectName: shop_parent
  *
@@ -23,7 +21,7 @@ import javax.annotation.Resource;
 public class SearchController {
     @Autowired
     private ElasticsearchRestTemplate esRestTemplate;
-    @Resource
+    @Autowired
     private SearchService searchService;
 
     /**

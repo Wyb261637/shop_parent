@@ -17,6 +17,9 @@ spring:
     port: 5672
     username: root
     password: 123456
+    listener:
+      simple:
+        acknowledge-mode: manual #使用此配置将rabbitmq改为手动签收消息，防止消息丢失
   redis:
     host: 192.168.2.129
     port: 6379

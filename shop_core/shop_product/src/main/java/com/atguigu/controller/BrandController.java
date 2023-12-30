@@ -1,6 +1,5 @@
 package com.atguigu.controller;
 
-import com.atguigu.cache.ShopCache;
 import com.atguigu.entity.BaseBrand;
 import com.atguigu.result.RetVal;
 import com.atguigu.service.BaseBrandService;
@@ -96,7 +95,7 @@ public class BrandController {
      *
      * @return
      */
-    @ShopCache(prefix = "allBrand",enableBloom = false)
+//    @ShopCache(prefix = "allBrand",enableBloom = false)
     @GetMapping ("getAllBrand")
     public RetVal getAllBrand() {
         List<BaseBrand> list = baseBrandService.list(null);

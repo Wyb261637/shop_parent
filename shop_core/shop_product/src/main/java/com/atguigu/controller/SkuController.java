@@ -2,6 +2,7 @@ package com.atguigu.controller;
 
 
 import com.atguigu.client.SearchFeignClient;
+import com.atguigu.constant.MqConst;
 import com.atguigu.entity.ProductImage;
 import com.atguigu.entity.ProductSalePropertyKey;
 import com.atguigu.entity.SkuInfo;
@@ -12,6 +13,7 @@ import com.atguigu.service.SkuInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +42,9 @@ public class SkuController {
 
     @Autowired
     private ProductSalePropertyKeyService salePropertyKeyService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 1.根据spuId查询所有的spu图片 <a href="http://127.0.0.1/product/V/12">...</a>
@@ -106,7 +111,8 @@ public class SkuController {
         //0代表商品下架
         skuInfo.setIsSale(0);
         skuInfoService.updateById(skuInfo);
-        searchFeignClient.offSale(skuId);
+//        searchFeignClient.offSale(skuId);
+        rabbitTemplate.convertAndSend(MqConst.ON_OFF_SALE_EXCHANGE,MqConst.OFF_SALE_ROUTING_KEY,skuId);
         return RetVal.ok();
     }
 
@@ -123,7 +129,8 @@ public class SkuController {
         //1代表商品上架
         skuInfo.setIsSale(1);
         skuInfoService.updateById(skuInfo);
-        searchFeignClient.onSale(skuId);
+//        searchFeignClient.onSale(skuId);
+        rabbitTemplate.convertAndSend(MqConst.ON_OFF_SALE_EXCHANGE,MqConst.ON_SALE_ROUTING_KEY,skuId);
         return RetVal.ok();
     }
 }

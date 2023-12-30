@@ -18,6 +18,7 @@ public interface CartInfoService extends IService<CartInfo> {
 
     /**
      * 1.加入购物车
+     *
      * @param oneOfUserId
      * @param skuId
      * @param skuNum
@@ -26,6 +27,7 @@ public interface CartInfoService extends IService<CartInfo> {
 
     /**
      * 2.购物车列表
+     *
      * @param request
      * @return
      */
@@ -33,20 +35,25 @@ public interface CartInfoService extends IService<CartInfo> {
 
     /**
      * 3.购物车勾选
+     *
      * @param oneOfUserId
      * @param skuId
      * @param isChecked
      */
     void checkCart(String oneOfUserId, Long skuId, Integer isChecked);
+
     /**
      * 4.删除购物车
+     *
      * @param oneOfUserId
      * @param skuId
      * @return
      */
     void deleteCart(String oneOfUserId, Long skuId);
+
     /**
      * 5.查询购物车勾选信息,其他微服务调用的不需要使用 RetVal
+     *
      * @param userId
      * @return
      */

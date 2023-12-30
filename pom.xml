@@ -16,6 +16,7 @@
         <module>shop_web</module>
         <module>shop_feign_client</module>
         <module>shop_core/shop_cart</module>
+        <module>shop_core/shop_order</module>
     </modules>
 
     <!--引入spring boot 版本依赖-->
@@ -45,13 +46,17 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -59,7 +64,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <!--mybatis-plus 持久层-->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -72,13 +76,11 @@
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
-
             <!--swagger-->
             <dependency>
                 <groupId>io.springfox</groupId>
@@ -91,13 +93,11 @@
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>net.oschina.zcx7878</groupId>
                 <artifactId>fastdfs-client-java</artifactId>
                 <version>${fastdfs.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -121,7 +121,6 @@
             </releases>
         </repository>
     </repositories>
-
     <build>
         <!--src/main/java目录下所有以xml结尾的文件 都编译到classpath目录下-->
         <resources>

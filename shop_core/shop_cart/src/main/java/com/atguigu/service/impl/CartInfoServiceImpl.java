@@ -43,6 +43,7 @@ public class CartInfoServiceImpl extends ServiceImpl<CartInfoMapper, CartInfo> i
     private RedisTemplate redisTemplate;
     @Autowired
     private AsyncCartInfoService asyncCartInfoService;
+
     @Override
     public void addToCart(String oneOfUserId, Long skuId, Integer skuNum) {
         //a.查询数据库中是否存在该商品信息
@@ -89,7 +90,7 @@ public class CartInfoServiceImpl extends ServiceImpl<CartInfoMapper, CartInfo> i
         String userTempId = AuthContextHolder.getUserTempId(request);
         List<CartInfo> cartInfoList = new ArrayList<>();
         //1.未登录
-        if (StringUtils.isEmpty(userId) || !StringUtils.isEmpty(userTempId)) {
+        if (StringUtils.isEmpty(userId) && !StringUtils.isEmpty(userTempId)) {
             cartInfoList = queryFromDbToRedis(userTempId);
         }
         //2.已登录
