@@ -26,7 +26,7 @@ public class CodeGenerator {
         //String projectPath = System.getProperty("user.dir");
         //globalConfig.setOutputDir(projectPath + "/src/main/java");
 
-        globalConfig.setOutputDir("F:\\Study\\Java\\shop_parent\\shop_core\\shop_order\\src\\main\\java");
+        globalConfig.setOutputDir("F:\\Study\\Java\\shop_parent\\shop_core\\shop_payment\\src\\main\\java");
         globalConfig.setAuthor("WangYiBing");
         //生成后是否打开资源管理器
         globalConfig.setOpen(false);
@@ -76,7 +76,9 @@ public class CodeGenerator {
 //        strategy.setInclude("user_info","user_address");
 //        strategy.setInclude("cart_info");
 //        strategy.setInclude("order_detail","order_info");
+//        strategy.setInclude("t_order_1","t_order_detail_1");
 //        strategy.setInclude("seckill_product");
+        strategy.setInclude("payment_info");
         //数据库表映射到实体的命名策略
         strategy.setNaming(NamingStrategy.underline_to_camel);
         //生成实体时去掉表前缀
