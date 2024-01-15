@@ -102,8 +102,8 @@ public class OrderInfoController {
             return RetVal.fail().message("不能重复提交订单！");
         }
         //验证库存与价格
-        String warningMessage=orderInfoService.checkStockAndPrice(userId,orderInfo);
-        if (!StringUtils.isEmpty(warningMessage)){
+        String warningMessage = orderInfoService.checkStockAndPrice(userId, orderInfo);
+        if (!StringUtils.isEmpty(warningMessage)) {
             return RetVal.fail().message(warningMessage);
         }
         //保存订单的基本信息和详情信息
@@ -111,6 +111,17 @@ public class OrderInfoController {
         //订单提交成功后还需要删除流水号
         orderInfoService.deleteTradeNo(userId);
         return RetVal.ok(orderId);
+    }
+
+    /**
+     * 3.根据订单Id查询订单信息
+     *
+     * @param orderId
+     * @return
+     */
+    @GetMapping("getOrderInfoById/{orderId}")
+    public OrderInfo getOrderInfoById(@PathVariable Long orderId) {
+        return orderInfoService.getById(orderId);
     }
 }
 

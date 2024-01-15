@@ -1,5 +1,6 @@
 package com.atguigu.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.client.ProductFeignClient;
 import com.atguigu.constant.MqConst;
 import com.atguigu.entity.OrderDetail;
@@ -9,6 +10,7 @@ import com.atguigu.mapper.OrderInfoMapper;
 import com.atguigu.service.OrderDetailService;
 import com.atguigu.service.OrderInfoService;
 import com.atguigu.util.HttpClientUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>
@@ -131,5 +130,59 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return sb.toString();
     }
 
+    @Override
+    public OrderInfo getOrderInfoAndDetail(Long orderId) {
+        //1.查询订单基本信息
+        OrderInfo orderInfo = baseMapper.selectById(orderId);
+        if (orderInfo != null) {
+            //2.查询订单详细信息
+            QueryWrapper<OrderDetail> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("order_id", orderId);
+            List<OrderDetail> orderDetailList = orderDetailService.list(queryWrapper);
+            orderInfo.setOrderDetailList(orderDetailList);
+        }
+        return orderInfo;
+    }
 
+    @Override
+    public void updateOrderStatus(OrderInfo orderInfo, ProcessStatus status) {
+        orderInfo.setOrderStatus(status.getOrderStatus().name());
+        orderInfo.setProcessStatus(status.name());
+        baseMapper.updateById(orderInfo);
+    }
+
+    @Override
+    public void sendMsgToWareHouse(OrderInfo orderInfo) {
+        //a.将订单状态改为已通知仓库
+        updateOrderStatus(orderInfo, ProcessStatus.NOTIFIED_WARE);
+        //b.需要组织一个json类型的数据给仓库系统
+        String jsonData = assembleWareHouseData(orderInfo);
+        //c.发消息给仓库系统
+        rabbitTemplate.convertAndSend(MqConst.DECREASE_STOCK_EXCHANGE,MqConst.DECREASE_STOCK_ROUTE_KEY,jsonData);
+
+    }
+
+    private String assembleWareHouseData(OrderInfo orderInfo) {
+        //构造一个map结构用于封装数据
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("orderId", orderInfo.getId());
+        dataMap.put("consignee", orderInfo.getConsignee());
+        dataMap.put("consigneeTel", orderInfo.getConsigneeTel());
+        dataMap.put("orderComment", orderInfo.getOrderComment());
+        dataMap.put("orderBody", orderInfo.getTradeBody());
+        dataMap.put("deliveryAddress", orderInfo.getDeliveryAddress());
+        dataMap.put("paymentWay", 2);
+        //构造商品清单
+        List<Map<String, Object>> orderDetailMapList = new ArrayList<>();
+        List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
+        for (OrderDetail orderDetail : orderDetailList) {
+            Map<String, Object> orderDetailMap = new HashMap<>();
+            orderDetailMap.put("skuId", orderDetail.getSkuId());
+            orderDetailMap.put("skuNum", orderDetail.getSkuNum());
+            orderDetailMap.put("skuName", orderDetail.getSkuName());
+            orderDetailMapList.add(orderDetailMap);
+        }
+        dataMap.put("details", orderDetailMapList);
+        return JSON.toJSONString(dataMap);
+    }
 }

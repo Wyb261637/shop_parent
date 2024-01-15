@@ -267,14 +267,14 @@ public class GwareServiceImpl implements GwareService {
             wareSku.setWarehouseId(wareOrderTask.getWareId());
             wareSku.setStockLocked(wareOrderTaskDetail.getSkuNum());
             wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
-
-            int availableStock = wareSkuMapper.selectStockBySkuidForUpdate(wareSku); //查询可用库存 加行级写锁 注意索引避免表锁
+            //查询可用库存 加行级写锁 注意索引避免表锁
+            int availableStock = wareSkuMapper.selectStockBySkuidForUpdate(wareSku);
             if (availableStock - wareOrderTaskDetail.getSkuNum() < 0) {
                 comment += "减库存异常：名称：" + wareOrderTaskDetail.getSkuName() + "，实际可用库存数" + availableStock + ",要求库存" + wareOrderTaskDetail.getSkuNum();
             }
         }
-
-        if (comment.length() > 0) {   //库存超卖 记录日志，返回错误状态
+        //库存超卖 记录日志，返回错误状态
+        if (comment.length() > 0) {
             wareOrderTask.setTaskComment(comment);
             wareOrderTask.setTaskStatus(TaskStatus.OUT_OF_STOCK.name());
             updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.OUT_OF_STOCK);
@@ -286,8 +286,8 @@ public class GwareServiceImpl implements GwareService {
                 wareSku.setWarehouseId(wareOrderTask.getWareId());
                 wareSku.setStockLocked(wareOrderTaskDetail.getSkuNum());
                 wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
-
-                wareSkuMapper.incrStockLocked(wareSku); //  加行级写锁 注意索引避免表锁
+                //  加行级写锁 注意索引避免表锁
+                wareSkuMapper.incrStockLocked(wareSku);
 
             }
             wareOrderTask.setTaskStatus(TaskStatus.DEDUCTED.name());

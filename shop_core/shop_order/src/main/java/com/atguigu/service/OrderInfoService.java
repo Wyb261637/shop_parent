@@ -1,6 +1,7 @@
 package com.atguigu.service;
 
 import com.atguigu.entity.OrderInfo;
+import com.atguigu.enums.ProcessStatus;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -53,5 +54,26 @@ public interface OrderInfoService extends IService<OrderInfo> {
      */
     String checkStockAndPrice(String userId, OrderInfo orderInfo);
 
+    /**
+     * 6.查询订单基本信息与详细信息是为了接下来减库存使用
+     *
+     * @param orderId
+     * @return
+     */
+    OrderInfo getOrderInfoAndDetail(Long orderId);
+
+    /**
+     * 7.修改订单状态
+     *
+     * @param orderInfo
+     * @param status
+     */
+    void updateOrderStatus(OrderInfo orderInfo, ProcessStatus status);
+
+    /**
+     * 8.发送消息通知库存系统减库存
+     * @param orderInfo
+     */
+    void sendMsgToWareHouse(OrderInfo orderInfo);
 
 }

@@ -1,7 +1,6 @@
 package com.atguigu.controller;
 
 
-import com.atguigu.client.SearchFeignClient;
 import com.atguigu.constant.MqConst;
 import com.atguigu.entity.ProductImage;
 import com.atguigu.entity.ProductSalePropertyKey;
@@ -37,8 +36,8 @@ public class SkuController {
     @Autowired
     private SkuInfoService skuInfoService;
 
-    @Autowired
-    private SearchFeignClient searchFeignClient;
+//    @Autowired
+//    private SearchFeignClient searchFeignClient;
 
     @Autowired
     private ProductSalePropertyKeyService salePropertyKeyService;
