@@ -257,7 +257,7 @@ public class GwareServiceImpl implements GwareService {
         this.sendMessage(MqConst.SUCCESS_DECREASE_STOCK_EXCHANGE, MqConst.SUCCESS_DECREASE_STOCK_ROUTE_KEY, JSON.toJSONString(map));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void lockStock(WareOrderTask wareOrderTask) {
         List<WareOrderTaskDetail> wareOrderTaskDetails = wareOrderTask.getDetails();
         String comment = "";

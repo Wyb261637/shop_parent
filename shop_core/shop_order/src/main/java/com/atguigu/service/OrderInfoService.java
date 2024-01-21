@@ -76,4 +76,12 @@ public interface OrderInfoService extends IService<OrderInfo> {
      */
     void sendMsgToWareHouse(OrderInfo orderInfo);
 
+    /**
+     * 9.根据仓库拆单
+     * @param orderId
+     * @param wareHouseIdSkuIdMapJson
+     * @return
+     */
+    String splitOrder(Long orderId, String wareHouseIdSkuIdMapJson);
+
 }

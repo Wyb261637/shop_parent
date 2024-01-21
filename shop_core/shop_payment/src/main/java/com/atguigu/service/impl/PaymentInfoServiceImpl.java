@@ -1,6 +1,6 @@
 package com.atguigu.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,6 +42,7 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
     private OrderFeignClient orderFeignClient;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
     @Override
     public String createQrCode(Long orderId) throws AlipayApiException {
         //根据订单id查询订单信息
@@ -53,23 +55,29 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         request.setNotifyUrl(AlipayConfig.notify_payment_url);
         ////支付成功之后的同步通知，支付成功之后跳转到商户指定页面
         request.setReturnUrl(AlipayConfig.return_payment_url);
-        JSONObject bizContent = new JSONObject();
+        //构造json参数
+//        JSONObject bizContent = new JSONObject();
+        Map<String, Object> bizMap = new HashMap<>();
         if (orderInfo != null) {
             //商户订单号，商家自定义，保持唯一性
-            bizContent.put("out_trade_no", orderInfo.getOutTradeNo());
+//            bizContent.put("out_trade_no", orderInfo.getOutTradeNo());
             //支付总金额，最小值0.01元
-            bizContent.put("total_amount", orderInfo.getTotalMoney());
+//            bizContent.put("total_amount", orderInfo.getTotalMoney());
             //订单标题，不可使用特殊符号
-            bizContent.put("subject", "天气太热，买个锤子手机！");
+//            bizContent.put("subject", "天气太热，买个锤子手机！");
             //电脑网站支付场景固定传值FAST_INSTANT_TRADE_PAY
-            bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
+//            bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
+            bizMap.put("out_trade_no", orderInfo.getOutTradeNo());
+            bizMap.put("total_amount", orderInfo.getTotalMoney());
+            bizMap.put("subject", "天气太热，买个锤子手机！");
+            bizMap.put("product_code", "FAST_INSTANT_TRADE_PAY");
         }
-        request.setBizContent(bizContent.toString());
+//        request.setBizContent(bizContent.toString());
+        request.setBizContent(JSON.toJSONString(bizMap));
         AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
         if (response.isSuccess()) {
             //返回支付宝调用成功页面
-            String alipayHtml = response.getBody();
-            return alipayHtml;
+            return response.getBody();
         } else {
             System.out.println("调用失败");
         }
@@ -100,21 +108,21 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         baseMapper.updateById(paymentInfo);
         //发送消息到RabbitMQ，通知订单服务，更新订单状态
         rabbitTemplate.convertAndSend(MqConst.PAY_ORDER_EXCHANGE,
-                MqConst.PAY_ORDER_ROUTE_KEY,paymentInfo.getOrderId());
+                MqConst.PAY_ORDER_ROUTE_KEY, paymentInfo.getOrderId());
     }
 
-        private void savePaymentInfo(@NotNull OrderInfo order) {
+    private void savePaymentInfo(@NotNull OrderInfo order) {
         //判断支付表单里面是否有添加过该记录
         QueryWrapper<PaymentInfo> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_id",order.getId());
-        wrapper.eq("payment_type",PaymentType.ALIPAY.name());
+        wrapper.eq("order_id", order.getId());
+        wrapper.eq("payment_type", PaymentType.ALIPAY.name());
         Integer count = baseMapper.selectCount(wrapper);
-        if(count>0){
+        if (count > 0) {
             return;
         }
         PaymentInfo paymentInfo = new PaymentInfo();
         paymentInfo.setOutTradeNo(order.getOutTradeNo());
-        paymentInfo.setOrderId(order.getId()+"");
+        paymentInfo.setOrderId(String.valueOf(order.getId()));
         paymentInfo.setPaymentType(PaymentType.ALIPAY.name());
         paymentInfo.setPaymentMoney(order.getTotalMoney());
         paymentInfo.setPaymentContent(order.getTradeBody());

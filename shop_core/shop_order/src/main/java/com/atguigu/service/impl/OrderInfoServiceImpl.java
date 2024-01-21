@@ -13,11 +13,13 @@ import com.atguigu.util.HttpClientUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -156,13 +158,64 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //a.将订单状态改为已通知仓库
         updateOrderStatus(orderInfo, ProcessStatus.NOTIFIED_WARE);
         //b.需要组织一个json类型的数据给仓库系统
-        String jsonData = assembleWareHouseData(orderInfo);
+        String jsonData = JSON.toJSONString(assembleWareHouseData(orderInfo));
         //c.发消息给仓库系统
-        rabbitTemplate.convertAndSend(MqConst.DECREASE_STOCK_EXCHANGE,MqConst.DECREASE_STOCK_ROUTE_KEY,jsonData);
+        rabbitTemplate.convertAndSend(MqConst.DECREASE_STOCK_EXCHANGE, MqConst.DECREASE_STOCK_ROUTE_KEY, jsonData);
 
     }
 
-    private String assembleWareHouseData(OrderInfo orderInfo) {
+    @Override
+    public String splitOrder(Long orderId, String wareHouseIdSkuIdMapJson) {
+        //1.获取原始订单信息
+        OrderInfo parentOrderInfo = getOrderInfoAndDetail(orderId);
+        //参数格式转换为list [{"wareHouseId":"1","skuIdList":["24","28"]},{"wareHouseId":"2","skuIdList":["25,30,32"]}]
+        List<Map> wareHouseIdSkuIdMapList = JSON.parseArray(wareHouseIdSkuIdMapJson, Map.class);
+        //构造多个订单拼接好的json数据
+        List<Object> assembleWareHouseDataList=new ArrayList<>();
+        for (Map wareHouseIdSkuIdMap : wareHouseIdSkuIdMapList) {
+            String wareHouseId = (String) wareHouseIdSkuIdMap.get("wareHouseId");
+            List<String> skuIdList = (List<String>) wareHouseIdSkuIdMap.get("skuIdList");
+            //2.设置子订单信息
+            OrderInfo childOrderInfo = new OrderInfo();
+            BeanUtils.copyProperties(parentOrderInfo, childOrderInfo);
+            childOrderInfo.setParentOrderId(orderId);
+            childOrderInfo.setId(null);
+            //设置仓库Id
+            childOrderInfo.setWareHouseId(wareHouseId);
+            //3.设置子订单详细信息 该子订单有哪些明细 子订单金额
+            BigDecimal childTotalMoney = new BigDecimal("0");
+            List<OrderDetail> childOrderDetailList = new ArrayList<>();
+            List<OrderDetail> parentOrderDetailList = parentOrderInfo.getOrderDetailList();
+            for (OrderDetail parentOrderDetail : parentOrderDetailList) {
+                for (String skuId : skuIdList) {
+                    if (Long.parseLong(skuId) == parentOrderDetail.getSkuId()) {
+                        BigDecimal orderPrice = parentOrderDetail.getOrderPrice();
+                        String skuNum = parentOrderDetail.getSkuNum();
+                        childTotalMoney = childTotalMoney.add(orderPrice.multiply(new BigDecimal(skuNum)));
+                        childOrderDetailList.add(parentOrderDetail);
+                    }
+                }
+            }
+            childOrderInfo.setTotalMoney(childTotalMoney);
+            childOrderInfo.setOrderDetailList(childOrderDetailList);
+            //保存子订单及其订单详细信息
+            saveOrderAndDetail(childOrderInfo);
+            //构造多个子订单信息
+            Map<String, Object> warehouseMap = assembleWareHouseData(childOrderInfo);
+            assembleWareHouseDataList.add(warehouseMap);
+        }
+        //4.把原始订单改为已拆分
+        updateOrderStatus(parentOrderInfo, ProcessStatus.SPLIT);
+        //5.返回信息给仓库系统
+        return JSON.toJSONString(assembleWareHouseDataList);
+    }
+
+    /**
+     * 拼接的是一个订单信息
+     * @param orderInfo
+     * @return
+     */
+    private Map<String, Object> assembleWareHouseData(OrderInfo orderInfo) {
         //构造一个map结构用于封装数据
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("orderId", orderInfo.getId());
@@ -172,6 +225,10 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         dataMap.put("orderBody", orderInfo.getTradeBody());
         dataMap.put("deliveryAddress", orderInfo.getDeliveryAddress());
         dataMap.put("paymentWay", 2);
+        //设置一个仓库Id 给仓库拆完单之后返回值用的
+        if (!StringUtils.isEmpty(orderInfo.getWareHouseId())) {
+            dataMap.put("wareId", orderInfo.getWareHouseId());
+        }
         //构造商品清单
         List<Map<String, Object>> orderDetailMapList = new ArrayList<>();
         List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
@@ -183,6 +240,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             orderDetailMapList.add(orderDetailMap);
         }
         dataMap.put("details", orderDetailMapList);
-        return JSON.toJSONString(dataMap);
+        return dataMap;
     }
 }

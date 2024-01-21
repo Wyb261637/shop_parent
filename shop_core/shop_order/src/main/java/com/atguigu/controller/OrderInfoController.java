@@ -123,5 +123,16 @@ public class OrderInfoController {
     public OrderInfo getOrderInfoById(@PathVariable Long orderId) {
         return orderInfoService.getById(orderId);
     }
+
+    /**
+     * 4.根据仓库拆单
+     * @param orderId
+     * @param wareHouseIdSkuIdMapJson
+     * @return
+     */
+    @PostMapping("splitOrder")
+    public String splitOrder(@RequestParam Long orderId, @RequestParam String wareHouseIdSkuIdMapJson) {
+        return orderInfoService.splitOrder(orderId,wareHouseIdSkuIdMapJson);
+    }
 }
 
