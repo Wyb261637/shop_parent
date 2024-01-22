@@ -19,7 +19,7 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * @param orderInfo
      * @return
      */
-    Long saveOrderAndDetail(OrderInfo orderInfo);
+    Long saveOrderAndDetail(OrderInfo orderInfo,String userId);
 
     /**
      * 2.生成流水号

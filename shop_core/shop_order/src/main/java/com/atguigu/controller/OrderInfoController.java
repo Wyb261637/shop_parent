@@ -107,7 +107,7 @@ public class OrderInfoController {
             return RetVal.fail().message(warningMessage);
         }
         //保存订单的基本信息和详情信息
-        Long orderId = orderInfoService.saveOrderAndDetail(orderInfo);
+        Long orderId = orderInfoService.saveOrderAndDetail(orderInfo,userId);
         //订单提交成功后还需要删除流水号
         orderInfoService.deleteTradeNo(userId);
         return RetVal.ok(orderId);

@@ -36,4 +36,24 @@ public interface PaymentInfoService extends IService<PaymentInfo> {
      */
     void updatePaymentInfo(Map<String, String> aliPayParam);
 
+    /**
+     * 4.退款
+     * @param orderId
+     * @return
+     */
+    boolean refund(Long orderId) throws AlipayApiException;
+
+    /**
+     * 5.查询支付宝是否有交易记录
+     * @param orderId
+     * @return
+     */
+    boolean queryAlipayTrade(Long orderId) throws AlipayApiException;
+
+    /**
+     * 6.交易关闭
+     * @param orderId
+     * @return
+     */
+    boolean closeAlipayTrade(Long orderId) throws AlipayApiException;
 }

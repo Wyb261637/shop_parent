@@ -47,7 +47,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     private Integer cancelOrderDelay;
 
     @Override
-    public Long saveOrderAndDetail(OrderInfo orderInfo) {
+    public Long saveOrderAndDetail(OrderInfo orderInfo,String userId) {
         //商品对外交易号
         String outTradeNo = "atguigu" + System.currentTimeMillis();
         orderInfo.setOutTradeNo(outTradeNo);
@@ -59,6 +59,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setExpireTime(instance.getTime());
         //订单的进度状态
         orderInfo.setProcessStatus(ProcessStatus.UNPAID.name());
+        orderInfo.setUserId(Long.parseLong(userId));
         //保存订单的基本信息
         baseMapper.insert(orderInfo);
         //保存订单的详情信息
@@ -199,7 +200,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             childOrderInfo.setTotalMoney(childTotalMoney);
             childOrderInfo.setOrderDetailList(childOrderDetailList);
             //保存子订单及其订单详细信息
-            saveOrderAndDetail(childOrderInfo);
+            saveOrderAndDetail(childOrderInfo,null);
             //构造多个子订单信息
             Map<String, Object> warehouseMap = assembleWareHouseData(childOrderInfo);
             assembleWareHouseDataList.add(warehouseMap);

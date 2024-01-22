@@ -70,5 +70,48 @@ public class PaymentInfoController {
         }
         return "failure";
     }
+
+    /**
+     * 3.退款
+     * @param orderId
+     * @return
+     * @throws AlipayApiException
+     */
+    @GetMapping("refund/{orderId}")
+    public boolean refund(@PathVariable Long orderId) throws AlipayApiException {
+        return paymentInfoService.refund(orderId);
+    }
+
+    /**
+     * 4.查询支付宝是否有交易记录
+     * @param orderId
+     * @return
+     * @throws AlipayApiException
+     */
+    @GetMapping("queryAlipayTrade/{orderId}")
+    public boolean queryAlipayTrade(@PathVariable Long orderId) throws AlipayApiException {
+        return paymentInfoService.queryAlipayTrade(orderId);
+    }
+
+    /**
+     * 5.交易关闭
+     * @param orderId
+     * @return
+     * @throws AlipayApiException
+     */
+    @GetMapping("closeAlipayTrade/{orderId}")
+    public boolean closeAlipayTrade(@PathVariable Long orderId) throws AlipayApiException {
+        return paymentInfoService.closeAlipayTrade(orderId);
+    }
+
+    /**
+     * 6.根据outTradeNo查询支付表单信息
+     * @param outTradeNo
+     * @return
+     */
+    @GetMapping("getPaymentInfo/{outTradeNo}")
+    public PaymentInfo getPaymentInfo(@PathVariable String outTradeNo)  {
+        return paymentInfoService.getPaymentInfo(outTradeNo);
+    }
 }
 

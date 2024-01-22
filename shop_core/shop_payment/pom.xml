@@ -28,6 +28,12 @@
             <version>13.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>8.11.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
