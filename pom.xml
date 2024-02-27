@@ -138,6 +138,7 @@
                     <include>**/*.xml</include>
                     <include>**/*.yml</include>
                     <include>**/*.conf</include>
+                    <include>**/banner.txt</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

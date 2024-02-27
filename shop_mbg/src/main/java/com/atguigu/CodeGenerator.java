@@ -26,7 +26,7 @@ public class CodeGenerator {
         //String projectPath = System.getProperty("user.dir");
         //globalConfig.setOutputDir(projectPath + "/src/main/java");
 
-        globalConfig.setOutputDir("F:\\Study\\Java\\shop_parent\\shop_core\\shop_payment\\src\\main\\java");
+        globalConfig.setOutputDir("F:\\Study\\Java\\shop_parent\\shop_core\\shop_seckill\\src\\main\\java");
         globalConfig.setAuthor("WangYiBing");
         //生成后是否打开资源管理器
         globalConfig.setOpen(false);
@@ -44,7 +44,7 @@ public class CodeGenerator {
 
         // 3、数据源配置
         DataSourceConfig dataSourceConfig = new DataSourceConfig();
-        dataSourceConfig.setUrl("jdbc:mysql://192.168.2.129:3306/shop_order?serverTimezone=GMT%2B8");
+        dataSourceConfig.setUrl("jdbc:mysql://192.168.2.129:3306/shop_seckill?serverTimezone=GMT%2B8");
         dataSourceConfig.setDriverName("com.mysql.jdbc.Driver");
         dataSourceConfig.setUsername("root");
         dataSourceConfig.setPassword("root");
@@ -77,8 +77,8 @@ public class CodeGenerator {
 //        strategy.setInclude("cart_info");
 //        strategy.setInclude("order_detail","order_info");
 //        strategy.setInclude("t_order_1","t_order_detail_1");
-//        strategy.setInclude("seckill_product");
-        strategy.setInclude("payment_info");
+        strategy.setInclude("seckill_product");
+//        strategy.setInclude("payment_info");
         //数据库表映射到实体的命名策略
         strategy.setNaming(NamingStrategy.underline_to_camel);
         //生成实体时去掉表前缀

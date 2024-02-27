@@ -107,7 +107,7 @@ public class OrderInfoController {
             return RetVal.fail().message(warningMessage);
         }
         //保存订单的基本信息和详情信息
-        Long orderId = orderInfoService.saveOrderAndDetail(orderInfo,userId);
+        Long orderId = orderInfoService.saveOrderAndDetail(orderInfo, userId);
         //订单提交成功后还需要删除流水号
         orderInfoService.deleteTradeNo(userId);
         return RetVal.ok(orderId);
@@ -126,13 +126,25 @@ public class OrderInfoController {
 
     /**
      * 4.根据仓库拆单
+     *
      * @param orderId
      * @param wareHouseIdSkuIdMapJson
      * @return
      */
     @PostMapping("splitOrder")
     public String splitOrder(@RequestParam Long orderId, @RequestParam String wareHouseIdSkuIdMapJson) {
-        return orderInfoService.splitOrder(orderId,wareHouseIdSkuIdMapJson);
+        return orderInfoService.splitOrder(orderId, wareHouseIdSkuIdMapJson);
+    }
+
+    /**
+     * 5.保存订单及详情
+     *
+     * @param orderInfo
+     * @return
+     */
+    @PostMapping("saveOrderAndDetail")
+    public Long saveOrderAndDetail(@RequestBody OrderInfo orderInfo, @RequestParam String userId) {
+        return orderInfoService.saveOrderAndDetail(orderInfo, userId);
     }
 }
 

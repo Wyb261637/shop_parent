@@ -18,6 +18,7 @@
         <module>shop_user</module>
         <module>shop_order</module>
         <module>shop_payment</module>
+        <module>shop_seckill</module>
     </modules>
     <dependencies>
         <dependency>

@@ -3,8 +3,7 @@ package com.atguigu.client;
 import com.atguigu.entity.OrderInfo;
 import com.atguigu.result.RetVal;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * projectName: shop_parent
@@ -25,9 +24,19 @@ public interface OrderFeignClient {
 
     /**
      * 2.根据订单Id查询订单信息
+     *
      * @param orderId
      * @return
      */
     @GetMapping("/order/getOrderInfoById/{orderId}")
     OrderInfo getOrderInfoById(@PathVariable Long orderId);
+
+    /**
+     * 3.保存订单及详情
+     *
+     * @param orderInfo
+     * @return
+     */
+    @PostMapping("/order/saveOrderAndDetail")
+    Long saveOrderAndDetail(@RequestBody OrderInfo orderInfo,@RequestParam String userId);
 }
