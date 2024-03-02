@@ -14,8 +14,6 @@
         <module>shop_gateway</module>
         <module>shop_web</module>
         <module>shop_feign_client</module>
-        <module>shop_core/shop_cart</module>
-        <module>shop_core/shop_order</module>
     </modules>
 
     <!--引入spring boot 版本依赖-->
