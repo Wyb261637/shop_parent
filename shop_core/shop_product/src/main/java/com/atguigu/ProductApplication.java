@@ -21,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 //@Import(MybatisPlusConfig.class)
 public class ProductApplication {
     public static void main(String[] args) {
-        System.out.println(11112222);
+        System.out.println(22234422);
         SpringApplication.run(ProductApplication.class, args);
     }
 }
