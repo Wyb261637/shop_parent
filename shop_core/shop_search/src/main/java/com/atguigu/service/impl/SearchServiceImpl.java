@@ -134,7 +134,7 @@ public class SearchServiceImpl implements SearchService {
         }else {
             totalPages = searchResponseVo.getTotal() / searchParam.getPageSize()+1;
         }
-        searchResponseVo.setTotal(totalPages);
+        searchResponseVo.setTotalPages(totalPages);
         return searchResponseVo;
     }
 

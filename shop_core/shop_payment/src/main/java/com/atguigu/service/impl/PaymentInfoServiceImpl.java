@@ -128,7 +128,7 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         bizContent.put("refund_amount", orderInfo.getTotalMoney());
         request.setBizContent(bizContent.toString());
         AlipayTradeRefundResponse response = alipayClient.execute(request);
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             PaymentInfo paymentInfo = getPaymentInfo(orderInfo.getOutTradeNo());
             paymentInfo.setPaymentStatus(ProcessStatus.CLOSED.name());
             baseMapper.updateById(paymentInfo);
@@ -146,7 +146,7 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         bizContent.put("out_trade_no", orderInfo.getOutTradeNo());
         request.setBizContent(bizContent.toString());
         AlipayTradeQueryResponse response = alipayClient.execute(request);
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             return true;
         } else {
             return false;
@@ -161,7 +161,7 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         bizContent.put("out_trade_no", orderInfo.getOutTradeNo());
         request.setBizContent(bizContent.toString());
         AlipayTradeCloseResponse response = alipayClient.execute(request);
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             return true;
         } else {
             return false;

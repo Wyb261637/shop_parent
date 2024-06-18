@@ -64,10 +64,8 @@ public class PaymentInfoController {
                 //修改支付表信息
                 paymentInfoService.updatePaymentInfo(aliPayParam);
             }
-        } else {
-            //验签失败则记录异常日志，并在response中返回failure.
-            return "failure";
         }
+        //验签失败则记录异常日志，并在response中返回failure.
         return "failure";
     }
 
