@@ -38,7 +38,6 @@ public class WebCartController {
         model.addAttribute("skuInfo", skuInfo);
         model.addAttribute("skuNum", skuNum);
         System.out.println("我是dev9999");
-        System.out.println("我是dev9999");
         return "cart/addCart";
     }
 
