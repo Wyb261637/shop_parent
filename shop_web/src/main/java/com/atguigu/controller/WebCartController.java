@@ -37,7 +37,7 @@ public class WebCartController {
         SkuInfo skuInfo = productFeignClient.getSkuInfo(skuId);
         model.addAttribute("skuInfo", skuInfo);
         model.addAttribute("skuNum", skuNum);
-        System.out.println("我是master7777");
+        System.out.println("我是dev7777");
         return "cart/addCart";
     }
 
