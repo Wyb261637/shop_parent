@@ -18,6 +18,7 @@ spring:
     port: 6379
     database: 0
     timeout: 1800000
+    password: 123456
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver

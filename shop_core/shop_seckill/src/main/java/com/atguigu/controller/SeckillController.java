@@ -122,7 +122,8 @@ public class SeckillController {
             UserSeckillSkuInfo userSeckillSkuInfo = new UserSeckillSkuInfo();
             userSeckillSkuInfo.setUserId(userId);
             userSeckillSkuInfo.setSkuId(skuId);
-            rabbitTemplate.convertAndSend(MqConst.PREPARE_SECKILL_EXCHANGE, MqConst.PREPARE_SECKILL_ROUTE_KEY, userSeckillSkuInfo);
+            rabbitTemplate.convertAndSend(MqConst.PREPARE_SECKILL_EXCHANGE,
+                    MqConst.PREPARE_SECKILL_ROUTE_KEY, userSeckillSkuInfo);
         } else {
             //秒杀商品已售罄
             return RetVal.build(null, RetValCodeEnum.SECKILL_FINISH);

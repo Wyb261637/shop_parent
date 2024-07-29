@@ -67,7 +67,7 @@ public class SearchController {
      * @return
      */
     @PostMapping("searchProduct")
-    public RetVal searchProduct(SearchParam searchParam) {
+    public RetVal searchProduct(@RequestBody SearchParam searchParam) {
         SearchResponseVo searchResponseVo = searchService.searchProduct(searchParam);
         return RetVal.ok(searchResponseVo);
     }

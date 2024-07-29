@@ -21,6 +21,8 @@ public class RedissonConfig {
         Config config = new Config();
         //可以用"rediss://"来启用SSL连接
         config.useSingleServer().setAddress("redis://192.168.2.129:6379");
+        //密码
+        config.useSingleServer().setPassword("123456");
         return Redisson.create(config);
     }
 }

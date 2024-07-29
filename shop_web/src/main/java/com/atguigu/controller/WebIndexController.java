@@ -62,8 +62,6 @@ public class WebIndexController {
         //4.页面排序信息回显
         Map<String,Object> orderMap=pageSortParam(searchParam.getOrder());
         model.addAttribute("orderMap",orderMap);
-
-
         return "search/index";
     }
     //&order=1:asc

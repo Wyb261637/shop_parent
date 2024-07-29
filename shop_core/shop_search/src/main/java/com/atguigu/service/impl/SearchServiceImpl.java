@@ -159,7 +159,7 @@ public class SearchServiceImpl implements SearchService {
                 searchResponseVo.getProductList().add(product);
             }
         }
-        //2.拿到商品的品牌信息
+        //2.拿到商品的品牌聚合信息
         ParsedLongTerms brandIdAgg = searchResponse.getAggregations().get("brandIdAgg");
         //如果遍历需要拿到返回值，把foreach改成map，然后放到collect(toList())
         List<SearchBrandVo> brandVoList = brandIdAgg.getBuckets().stream().map(bucket -> {
@@ -301,7 +301,6 @@ public class SearchServiceImpl implements SearchService {
                         .subAggregation(AggregationBuilders.terms("propertyKeyAgg").field("platformProperty.propertyKey"))
                         .subAggregation(AggregationBuilders.terms("propertyValueAgg").field("platformProperty.propertyValue")));
         esSqlBuilder.aggregation(nestedAggregationBuilder);
-
         //12.查询哪个index和type
         SearchRequest searchRequest = new SearchRequest("product");
         searchRequest.types("info");

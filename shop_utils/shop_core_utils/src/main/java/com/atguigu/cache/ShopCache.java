@@ -1,6 +1,9 @@
 package com.atguigu.cache;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * projectName: shop_parent
@@ -11,7 +14,7 @@ import java.lang.annotation.*;
  */
 
 @Target({ElementType.TYPE, ElementType.METHOD}) //该注解只能用在哪些地方
-@Retention(RetentionPolicy.RUNTIME)//该注解的声明周期，表示只到运行周期就结束
+@Retention(RetentionPolicy.RUNTIME)//该注解的生命周期，表示只到运行周期就结束
 public @interface ShopCache {
     String value() default "cache";
     //定义一个缓存前缀 目的：该缓存属于哪个部分的缓存
