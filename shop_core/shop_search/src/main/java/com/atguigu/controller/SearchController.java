@@ -33,7 +33,7 @@ public class SearchController {
     public RetVal createIndex() {
         esRestTemplate.createIndex(Product.class);
         esRestTemplate.putMapping(Product.class);
-        System.out.println("测试git回滚！");
+        System.out.println("测试git回滚！6666");
         return RetVal.ok();
     }
 
